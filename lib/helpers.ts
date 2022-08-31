@@ -19,3 +19,18 @@ export function checkLength(arrayOfString: string[]) {
         }
     });
 }
+
+
+export function createArrayOfDate(n: number): number[][] {
+    const arrayOfDate = Array.from({ length: n }, (_, k) => k + 1);
+    const array = arrayOfDate.reduce((acc: number[][], curr: number, i: number) => {
+        if (i % 7 === 0) {
+            acc.push([curr]);
+        }
+        else {
+            acc[acc.length - 1].push(curr);
+        }
+        return acc;
+    }, []);
+    return array;
+}
