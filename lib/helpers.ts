@@ -21,9 +21,12 @@ export function checkLength(arrayOfString: string[]) {
 }
 
 
-export function createArrayOfDate(n: number): number[][] {
-    const arrayOfDate = Array.from({ length: n }, (_, k) => k + 1);
-    const array = arrayOfDate.reduce((acc: number[][], curr: number, i: number) => {
+export function createArrayOfDate(n: number): number[] {
+    return Array.from({ length: n }, (_, k) => k + 1);
+}
+
+export function dayPerWeek(arrayOfDate: number[]): number[][] {
+    return arrayOfDate.reduce((acc: number[][], curr: number, i: number) => {
         if (i % 7 === 0) {
             acc.push([curr]);
         }
@@ -32,5 +35,4 @@ export function createArrayOfDate(n: number): number[][] {
         }
         return acc;
     }, []);
-    return array;
 }
