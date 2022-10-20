@@ -21,15 +21,10 @@ export class Calendar {
         this._currentDay = initialDate.getDate();
         this._previousDate = new Date(this._currentYear, this._currentMonth - 1, 0);
         this._nDays = new Date(this._currentYear, this._currentMonth, 0).getDate();
-
-        const previousWeeks = Array.from({ length: this._previousDate.getDate() - 27 }, (_, i) => 29 + i);
-        console.log('Previous month', this._previousDate.toDateString());
-        const missingDays = Array.from({ length: 7 - previousWeeks.length }, () => 0);
-        this._lastPreviousWeeks = [...previousWeeks, ...missingDays];
+        this._lastPreviousWeeks = Array.from({ length: this._previousDate.getDay() }, (_, k: number) => this._previousDate.getDate() - k);
         const t = createArrayOfDate(this._nDays);
-        t.unshift(...previousWeeks);
+        t.unshift(...this._lastPreviousWeeks);
         this._days = dayPerWeek(t);
-        
         this.setLocale('fr');
         try {
             checkLength(this._weeks);
@@ -53,7 +48,10 @@ export class Calendar {
                 let t = formatNumber(day, this._weeks[i].length, BLANK_SPACE);
                 // Today
                 if (day === this._currentDay) {
-                    t = colors.bgGreen(t);
+                    t.split('').filter(s => s !== BLANK_SPACE)
+                        .forEach((s) => {
+                            t = t.replace(s, colors.bgGreen(s));
+                        });
                 }
                 // Weekend
                 if (j > 4) {
@@ -70,10 +68,10 @@ export class Calendar {
         this._print(text);
     }
     private _createHeader() {
-        return this._months[this._currentMonth - 1] + NEW_LINE + colors.bgBlue(this._weeks.join(' ')) + NEW_LINE;
+        return NEW_LINE + this._months[this._currentMonth - 1] + BLANK_SPACE + this._currentYear + NEW_LINE + colors.bgBlue(this._weeks.join(' ')) + NEW_LINE;
     }
 
-    private _print(...args: any[]) {
+    private _print<T>(...args: T[]) {
         console.log(...args);
     }
 }
