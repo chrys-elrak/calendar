@@ -30,7 +30,7 @@ export class Calendar {
             this.setLocale('en');
             checkLength(this._weeks);
         } catch {
-            this._print(colors.bgRed('Error:'), 'Failed to create calendar, because of wrong length of weekdays.');
+            this._print(colors.bgRed('Error:'), 'Failed to create calendar');
             this._renderIt = false;
         }
     }
