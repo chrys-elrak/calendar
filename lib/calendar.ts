@@ -5,7 +5,6 @@ import { checkLength, createArrayOfDate, dayPerWeek, formatNumber } from "./help
 
 export class Calendar {
 
-    private _renderIt = true;
     private _previousDate: Date;
     private _nDays: number;
     private _currentMonth: number;
@@ -26,26 +25,30 @@ export class Calendar {
         const t = createArrayOfDate(this._nDays);
         t.unshift(...this._lastPreviousWeeks);
         this._days = dayPerWeek(t);
+        this.setLocale('en');
         try {
-            this.setLocale('en');
             checkLength(this._weeks);
         } catch {
             this._print(colors.bgRed('Error:'), 'Failed to create calendar');
-            this._renderIt = false;
+            Deno.exit(1);
         }
     }
 
     setLocale(locale: Locale) {
-        const data = Deno.readTextFileSync("./locale/" + locale + ".json")
+        const file = "./locale/" + locale + ".json";
+       try {
+        const data = Deno.readTextFileSync(file);
         const config = JSON.parse(data);
         this._weeks = config.weeks;
         this._months = config.months;
+        return this;
+       } catch (e) {
+            this._print(colors.bgRed("Error: "), `${e.message} "${file}"`);
+            Deno.exit(1);
+       }
     }
 
     render() {
-        if (!this._renderIt) {
-            return;
-        }
         let text = this._createHeader();
         this._days.forEach((week, i) => {
             week.forEach((day, j) => {
@@ -70,7 +73,13 @@ export class Calendar {
             text += NEW_LINE;
         });
         this._print(text);
+        return this;
     }
+
+    static new(initDate: Date = new Date()) {
+        return new Calendar(initDate);
+    }
+
     private _createHeader() {
         return NEW_LINE + this._months[this._currentMonth - 1] + BLANK_SPACE + this._currentYear + NEW_LINE + colors.bgBlue(this._weeks.join(' ')) + NEW_LINE;
     }
