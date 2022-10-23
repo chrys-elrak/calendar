@@ -1,3 +1,4 @@
+import { Locale } from './locale.ts';
 import { colors } from "../deps.ts";
 import { BLANK_SPACE, NEW_LINE } from "./const.ts";
 import { checkLength, createArrayOfDate, dayPerWeek, formatNumber } from "./helpers.ts";
@@ -12,8 +13,8 @@ export class Calendar {
     private _currentDay: number;
     private _days: number[][] = [];
     private _lastPreviousWeeks: number[] = [];
-    private _weeks: Array<string> = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
-    private _months: Array<string> = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+    private _weeks: Array<string> = [];
+    private _months: Array<string> = [];
 
     constructor(initialDate: Date = new Date()) {
         this._currentMonth = initialDate.getMonth() + 1; // Current month is 0-indexed so add 1
@@ -25,8 +26,8 @@ export class Calendar {
         const t = createArrayOfDate(this._nDays);
         t.unshift(...this._lastPreviousWeeks);
         this._days = dayPerWeek(t);
-        this.setLocale('fr');
         try {
+            this.setLocale('en');
             checkLength(this._weeks);
         } catch {
             this._print(colors.bgRed('Error:'), 'Failed to create calendar, because of wrong length of weekdays.');
@@ -34,8 +35,11 @@ export class Calendar {
         }
     }
 
-    setLocale(locale: 'en' | 'fr') {
-        this._weeks = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+    setLocale(locale: Locale) {
+        const data = Deno.readTextFileSync("./locale/" + locale + ".json")
+        const config = JSON.parse(data);
+        this._weeks = config.weeks;
+        this._months = config.months;
     }
 
     render() {
