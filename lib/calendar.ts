@@ -2,6 +2,7 @@ import { Locale } from './locale.ts';
 import { colors } from "../deps.ts";
 import { BLANK_SPACE, NEW_LINE } from "./const.ts";
 import { checkLength, createArrayOfDate, dayPerWeek, formatNumber } from "./helpers.ts";
+const DEFAULT_LOCALE = 'en';
 
 export class Calendar {
 
@@ -21,11 +22,14 @@ export class Calendar {
         this._currentDay = initialDate.getDate();
         this._previousDate = new Date(this._currentYear, this._currentMonth - 1, 0);
         this._nDays = new Date(this._currentYear, this._currentMonth, 0).getDate();
-        this._lastPreviousWeeks = Array.from({ length: this._previousDate.getDay() }, (_, k: number) => this._previousDate.getDate() - k);
+        this._lastPreviousWeeks = Array.from(
+            { length: this._previousDate.getDay() },
+            (_, k: number) => this._previousDate.getDate() - k
+        );
         const t = createArrayOfDate(this._nDays);
         t.unshift(...this._lastPreviousWeeks);
         this._days = dayPerWeek(t);
-        this.setLocale('en');
+        this.setLocale(DEFAULT_LOCALE);
         try {
             checkLength(this._weeks);
         } catch {
@@ -35,7 +39,7 @@ export class Calendar {
     }
 
     setLocale(locale: Locale) {
-        const file = "./locale/" + locale + ".json";
+       const file = "./locale/" + locale + ".json";
        try {
         const data = Deno.readTextFileSync(file);
         const config = JSON.parse(data);
@@ -43,8 +47,8 @@ export class Calendar {
         this._months = config.months;
         return this;
        } catch (e) {
-            this._print(colors.bgRed("Error: "), `${e.message} "${file}"`);
-            Deno.exit(1);
+           this._print(colors.bgRed("Error: "), colors.red(`Locale not suported "${locale}"`));
+           Deno.exit(1);
        }
     }
 
@@ -81,7 +85,9 @@ export class Calendar {
     }
 
     private _createHeader() {
-        return NEW_LINE + this._months[this._currentMonth - 1] + BLANK_SPACE + this._currentYear + NEW_LINE + colors.bgBlue(this._weeks.join(' ')) + NEW_LINE;
+        return NEW_LINE + this._months[this._currentMonth - 1] + BLANK_SPACE +
+            this._currentYear + NEW_LINE +
+            colors.bgBlue(this._weeks.join(' ')) + NEW_LINE;
     }
 
     private _print<T>(...args: T[]) {
