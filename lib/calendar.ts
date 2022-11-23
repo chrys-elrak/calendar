@@ -15,6 +15,7 @@ export class Calendar {
     private _lastPreviousWeeks: number[] = [];
     private _weeks: Array<string> = [];
     private _months: Array<string> = [];
+    private buffer = '';
 
     constructor(initialDate: Date = new Date()) {
         this._currentMonth = initialDate.getMonth() + 1; // Current month is 0-indexed so add 1
@@ -46,14 +47,14 @@ export class Calendar {
         this._weeks = config.weeks;
         this._months = config.months;
         return this;
-       } catch (e) {
+       } catch (_) {
            this._print(colors.bgRed("Error: "), colors.red(`Locale not suported "${locale}"`));
            Deno.exit(1);
        }
     }
 
-    render() {
-        let text = this._createHeader();
+    build(): this {
+        this.buffer = this._createHeader();
         this._days.forEach((week, i) => {
             week.forEach((day, j) => {
                 let t = formatNumber(day, this._weeks[i].length, BLANK_SPACE);
@@ -72,16 +73,21 @@ export class Calendar {
                 if (day > 1 && week.indexOf(1) > j) {
                     t = colors.gray(t);
                 }
-                text += t + BLANK_SPACE;
+                this.buffer += t + BLANK_SPACE;
             });
-            text += NEW_LINE;
+            this.buffer += NEW_LINE;
         });
-        this._print(text);
+        return this;
+    }
+
+    render(): this {
+        this.build();
+        this._print(this.buffer);
         return this;
     }
 
     static new(initDate: Date = new Date()) {
-        return new Calendar(initDate);
+        return new Calendar(initDate).render();
     }
 
     private _createHeader() {
