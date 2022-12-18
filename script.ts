@@ -1,4 +1,8 @@
 import Calendar from "./index.ts";
 
-Calendar.new();
+const args = Deno.args;
+
+console.log(args);
+
+//Calendar.new();
 
