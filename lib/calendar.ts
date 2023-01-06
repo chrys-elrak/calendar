@@ -1,6 +1,6 @@
 import { Locale } from "./locale.ts";
 import { colors } from "../deps.ts";
-import { BLANK_SPACE, NEW_LINE } from "./const.ts";
+import { BLANK_SPACE, COLUMN_SEPARATOR, NEW_LINE } from "./const.ts";
 import {
     checkLength,
     createArrayOfDate,
@@ -20,6 +20,7 @@ export class Calendar {
     private _weeks: Array<string> = [];
     private _months: Array<string> = [];
     private buffer = "";
+    private _today = new Date();
 
     constructor({
         initialDate = new Date(), 
@@ -101,9 +102,13 @@ export class Calendar {
     }
 
     private _createHeader() {
-        return NEW_LINE + this._months[this._currentMonth - 1] + BLANK_SPACE +
-            this._currentYear + NEW_LINE +
-            colors.bgBlue(this._weeks.join(" ")) + NEW_LINE;
+        return NEW_LINE + formatNumber(this._today.getDate(), 2, '0')
+            + BLANK_SPACE + this._months[this._currentMonth - 1] 
+            + BLANK_SPACE + this._currentYear
+            + BLANK_SPACE + '~'
+            + BLANK_SPACE + this._today.getHours() + COLUMN_SEPARATOR + this._today.getMinutes()
+            + NEW_LINE + colors.bgBlue(this._weeks.join(" ")) 
+            + NEW_LINE;
     }
 
     private _print<T>(...args: T[]) {
