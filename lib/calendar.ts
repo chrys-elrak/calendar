@@ -21,7 +21,10 @@ export class Calendar {
     private _months: Array<string> = [];
     private buffer = "";
 
-    constructor(initialDate: Date = new Date()) {
+    constructor({
+        initialDate = new Date(), 
+        locale = DEFAULT_LOCALE as Locale
+    }) {
         this._currentMonth = initialDate.getMonth() + 1; // Current month is 0-indexed so add 1
         this._currentYear = initialDate.getFullYear();
         this._currentDay = initialDate.getDate();
@@ -34,7 +37,7 @@ export class Calendar {
         const t = createArrayOfDate(this._startDate.getDate());
         t.unshift(...this._lastPreviousWeeks);
         this._days = dayPerWeek(t);
-        this.setLocale(DEFAULT_LOCALE);
+        this.setLocale(locale);
         try {
             checkLength(this._weeks);
         } catch {
@@ -90,8 +93,11 @@ export class Calendar {
         return this;
     }
 
-    static new(initDate: Date = new Date()) {
-        return new Calendar(initDate).render();
+    static new({
+        initialDate = new Date(), 
+        locale = DEFAULT_LOCALE as Locale
+    }) {
+        return new Calendar({initialDate, locale}).render();
     }
 
     private _createHeader() {
