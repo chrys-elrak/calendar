@@ -37,7 +37,7 @@ export default class ArgsParser {
         return Object.keys(this.args);
     }
 
-    getArg(key: string) {
+    get(key: string): string | boolean | number | undefined {
         return this.args[key];
     }
 }
