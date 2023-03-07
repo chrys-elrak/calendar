@@ -8,9 +8,11 @@ if (parser.isEmpty()) {
     console.log("No arguments provided. See --help for more information.");
     Deno.exit(1);
 }
-console.log(parser.args);
 
 if ("help" in parser.args) {
     console.log(parser.help());
     Deno.exit(0);
 }
+
+Calendar.new({});
+Deno.exit(0);
