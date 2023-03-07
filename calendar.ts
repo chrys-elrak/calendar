@@ -14,5 +14,18 @@ if ("help" in parser.args) {
     Deno.exit(0);
 }
 
-Calendar.new({});
+if ("d" in parser.args || "date" in parser.args) {
+  const date = parser.get("d") as string || parser.get("date") as string;
+  const dateInstance = new Date(date);
+  if (isNaN(dateInstance.getTime())) {
+    console.log("Invalid date provided. See --help for more information.");
+    Deno.exit(1);
+  }
+  Calendar.new({
+    initialDate: dateInstance,
+  });
+} else {
+  Calendar.new({});
+}
+
 Deno.exit(0);
