@@ -1,3 +1,5 @@
 import Calendar from "./index.ts";
+Calendar.new({
+    locale: "mg"
+});
 
-new Calendar().render();
