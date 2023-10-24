@@ -4,10 +4,10 @@ export default class ArgsParser {
 
     public args: TArgs =  {};
     constructor() {
-        this.parseArgs(Deno.args);
+        this.#parseArgs(Deno.args);
     }
 
-    private parseArgs(args: string[]) {
+    #parseArgs(args: string[]) {
         const parsedArgs:TArgs = {};
         for (let i = 0; i < args.length; i+=2) {
             const arg = args[i];

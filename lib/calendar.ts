@@ -10,39 +10,39 @@ import {
 const DEFAULT_LOCALE = "en";
 
 export class Calendar {
-    private _previousDate: Date;
-    private _startDate: Date;
-    private _currentMonth: number;
-    private _currentYear: number;
-    private _currentDay: number;
-    private _days: number[][] = [];
-    private _lastPreviousWeeks: number[] = [];
-    private _weeks: Array<string> = [];
-    private _months: Array<string> = [];
-    private buffer = "";
-    private _today = new Date();
+    #previousDate: Date;
+    #startDate: Date;
+    #currentMonth: number;
+    #currentYear: number;
+    #currentDay: number;
+    #days: number[][] = [];
+    #lastPreviousWeeks: number[] = [];
+    #weeks: Array<string> = [];
+    #months: Array<string> = [];
+    #buffer = "";
+    #today = new Date();
 
     constructor({
         initialDate = new Date(), 
         locale = DEFAULT_LOCALE as Locale
     }) {
-        this._currentMonth = initialDate.getMonth() + 1; // Current month is 0-indexed so add 1
-        this._currentYear = initialDate.getFullYear();
-        this._currentDay = initialDate.getDate();
-        this._previousDate = new Date(this._currentYear, this._currentMonth - 1, 0);
-        this._startDate = new Date(this._currentYear, this._currentMonth, 0);
-        this._lastPreviousWeeks = Array.from(
-            { length: this._previousDate.getDay() },
-            (_, k: number) => this._previousDate.getDate() - k,
+        this.#currentMonth = initialDate.getMonth() + 1; // Current month is 0-indexed so add 1
+        this.#currentYear = initialDate.getFullYear();
+        this.#currentDay = initialDate.getDate();
+        this.#previousDate = new Date(this.#currentYear, this.#currentMonth - 1, 0);
+        this.#startDate = new Date(this.#currentYear, this.#currentMonth, 0);
+        this.#lastPreviousWeeks = Array.from(
+            { length: this.#previousDate.getDay() },
+            (_, k: number) => this.#previousDate.getDate() - k,
         );
-        const t = createArrayOfDate(this._startDate.getDate());
-        t.unshift(...this._lastPreviousWeeks);
-        this._days = dayPerWeek(t);
+        const t = createArrayOfDate(this.#startDate.getDate());
+        t.unshift(...this.#lastPreviousWeeks);
+        this.#days = dayPerWeek(t);
         this.setLocale(locale);
         try {
-            checkLength(this._weeks);
+            checkLength(this.#weeks);
         } catch {
-            this._print(colors.bgRed("Error:"), "Failed to create calendar");
+            this.#print(colors.bgRed("Error:"), "Failed to create calendar");
             Deno.exit(1);
         }
     }
@@ -52,11 +52,11 @@ export class Calendar {
         try {
             const data = Deno.readTextFileSync(file);
             const config = JSON.parse(data);
-            this._weeks = config.weeks;
-            this._months = config.months;
+            this.#weeks = config.weeks;
+            this.#months = config.months;
             return this;
         } catch (_) {
-            this._print(
+            this.#print(
                 colors.bgRed("Error: "),
                 colors.red(`Locale not suported "${locale}"`),
             );
@@ -65,12 +65,12 @@ export class Calendar {
     }
 
     build(): this {
-        this.buffer = this._createHeader();
-        this._days.forEach((week, i) => {
+        this.#buffer = this.#createHeader();
+        this.#days.forEach((week, i) => {
             week.forEach((day, j) => {
-                let text = formatNumber(day, this._weeks[i].length, BLANK_SPACE);
+                let text = formatNumber(day, this.#weeks[i].length, BLANK_SPACE);
                 // Today
-                if (day === this._currentDay) {
+                if (day === this.#currentDay) {
                     text = colors.green(text);
                 }
                 // Weekend
@@ -81,16 +81,16 @@ export class Calendar {
                 if (day > 1 && week.indexOf(1) > j) {
                     text = colors.gray(text);
                 }
-                this.buffer += text + BLANK_SPACE;
+                this.#buffer += text + BLANK_SPACE;
             });
-            this.buffer += NEW_LINE;
+            this.#buffer += NEW_LINE;
         });
         return this;
     }
 
     render(): this {
         this.build();
-        this._print(this.buffer);
+        this.#print(this.#buffer);
         return this;
     }
 
@@ -101,17 +101,17 @@ export class Calendar {
         return new Calendar({initialDate, locale}).render();
     }
 
-    private _createHeader() {
-        return NEW_LINE + formatNumber(this._today.getDate(), 2, '0')
-            + BLANK_SPACE + this._months[this._currentMonth - 1] 
-            + BLANK_SPACE + this._currentYear
+    #createHeader() {
+        return NEW_LINE + formatNumber(this.#today.getDate(), 2, '0')
+            + BLANK_SPACE + this.#months[this.#currentMonth - 1] 
+            + BLANK_SPACE + this.#currentYear
             + BLANK_SPACE + '~'
-            + BLANK_SPACE + this._today.getHours() + COLUMN_SEPARATOR + this._today.getMinutes()
-            + NEW_LINE + colors.bgBlue(this._weeks.join(" ")) 
+            + BLANK_SPACE + this.#today.getHours() + COLUMN_SEPARATOR + this.#today.getMinutes()
+            + NEW_LINE + colors.bgBlue(this.#weeks.join(" ")) 
             + NEW_LINE;
     }
 
-    private _print<T>(...args: T[]) {
+    #print<T>(...args: T[]) {
         console.log(...args);
     }
 }
