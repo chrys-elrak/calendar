@@ -21,6 +21,7 @@ export class Calendar {
     #months: Array<string> = [];
     #buffer = "";
     #today = new Date();
+    #clock?: string;
 
     constructor({
         initialDate = new Date(), 
@@ -101,12 +102,18 @@ export class Calendar {
         return new Calendar({initialDate, locale}).render();
     }
 
+    static realtime(time: string) {
+        const instance = new Calendar({ initialDate: new Date() });
+        instance.#clock = time;
+        return instance.render();
+    }
+
     #createHeader() {
         return NEW_LINE + formatNumber(this.#today.getDate(), 2, '0')
             + BLANK_SPACE + this.#months[this.#currentMonth - 1] 
             + BLANK_SPACE + this.#currentYear
             + BLANK_SPACE + '~'
-            + BLANK_SPACE + this.#today.getHours() + COLUMN_SEPARATOR + this.#today.getMinutes()
+            + BLANK_SPACE + this.#clock
             + NEW_LINE + colors.bgBlue(this.#weeks.join(" ")) 
             + NEW_LINE;
     }

@@ -1,6 +1,3 @@
-import {Calendar} from "./index.ts";
+import {Clock} from "./index.ts";
 
-Calendar.new({
-    locale: "mg"
-});
-
+Clock.print(true);
