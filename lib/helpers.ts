@@ -36,3 +36,14 @@ export function dayPerWeek(arrayOfDate: number[]): number[][] {
         return acc;
     }, []);
 }
+
+export function addNumberPrefix(n: number, prefix = '0'): string {
+    if (n < 10 && n > -1) return `${prefix}${n}`;
+        return n.toString();
+}
+
+export function delay(ms: number) {
+    return new Promise((resolve) => {
+        setTimeout(resolve, ms);
+    });
+}

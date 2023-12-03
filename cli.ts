@@ -1,6 +1,7 @@
 // This is a CLI tool to generate a calendar for a given month and year.
-import Calendar from "./index.ts";
+import {Calendar} from "./index.ts";
 import ArgsParser from "./lib/args-parser.ts";
+
 
 const parser = new ArgsParser();
 
