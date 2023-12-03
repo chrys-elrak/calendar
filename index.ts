@@ -1,3 +1,4 @@
 import { Calendar } from "./lib/calendar.ts";
+import { Clock } from "./lib/clock.ts";
 
-export default Calendar;
+export {Calendar, Clock};
